@@ -1,0 +1,71 @@
+
+<article>
+<section>
+			<div class="pushbot">
+	<textarea class="shell" rows="1" readonly>apt-get install pdns-server pdns-backend-mysql</textarea>
+</div>
+<div class="filesub">
+	<fieldset class="file">
+		<legend>/etc/powerdns/pdns.conf</legend>
+		<div class="pushbot">
+	<textarea class="shell" rows="1" readonly>mv "/etc/powerdns/pdns.conf" "/etc/powerdns/pdns.conf.frx.bak"</textarea>
+</div>
+
+		<div class="pushbot">
+	<textarea class="shell" rows="1" readonly>/usr/bin/nano /etc/powerdns/pdns.conf</textarea>
+	<textarea class="filecontent" rows="15" readonly>allow-axfr-ips=127.0.0.0/8,::1,
+# add these entries to the list if any speficied: 
+allow-recursion=127.0.0.1
+config-dir=/etc/powerdns
+daemon=yes
+guardian=yes
+lazy-recursion=yes
+local-port=53
+master=yes
+module-dir=/usr/lib/powerdns
+setgid=pdns
+setuid=pdns
+socket-dir=/var/run
+version-string=powerdns
+include-dir=/etc/powerdns/zonesapi/</textarea>
+</div>
+
+		<div class="pushbot">
+	<textarea class="shell" rows="1" readonly>chmod 600 "/etc/powerdns/pdns.conf"</textarea>
+</div>
+
+	</fieldset>
+</div>
+<div class="pushbot">
+	<textarea class="shell" rows="1" readonly>mkdir -p /etc/powerdns/zonesapi/</textarea>
+</div>
+<div class="filesub">
+	<fieldset class="file">
+		<legend>/etc/powerdns/zonesapi/pdns_zonesapi.conf</legend>
+		
+		<div class="pushbot">
+	<textarea class="shell" rows="1" readonly>/usr/bin/nano /etc/powerdns/zonesapi/pdns_zonesapi.conf</textarea>
+	<textarea class="filecontent" rows="8" readonly># mysql-settings
+launch=gmysql
+gmysql-host=%dbhost
+gmysql-port=3306
+gmysql-dbname=%dbname
+gmysql-user=%dbuser
+gmysql-group=client
+gmysql-password=dbpassword
+</textarea>
+</div>
+
+		<div class="pushbot">
+	<textarea class="shell" rows="2" readonly>chmod 600 "/etc/powerdns/zonesapi/pdns_zonesapi.conf"
+chown root:root "/etc/powerdns/zonesapi/pdns_zonesapi.conf"</textarea>
+</div>
+
+	</fieldset>
+</div>
+<div class="pushbot">
+	<textarea class="shell" rows="1" readonly>/etc/init.d/pdns restart</textarea>
+</div>
+
+		</section>
+</article>

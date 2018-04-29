@@ -1,0 +1,5 @@
+Array
+(
+    [folder] => Ubuntu Trusty (14.04)
+    [typal] => smtp.html
+)
