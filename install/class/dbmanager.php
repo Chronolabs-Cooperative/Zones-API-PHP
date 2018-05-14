@@ -107,14 +107,12 @@ class Db_manager
         $this->db->connect();
         foreach ($pieces as $piece) {
             $piece = trim($piece);
+            
             // [0] contains the prefixed query
             // [4] contains unprefixed table name
-            if ($prefix==true)
-                $prefixed_query = SqlUtility::prefixQuery($piece, $this->db->prefix());
-            else 
-                $prefixed_query = $piece;
+            $prefixed_query = SqlUtility::prefixQuery($piece, ($prefix==true?$this->db->prefix():''));
             if ($prefixed_query != false) {
-                $table = $this->db->prefix($prefixed_query[4]);
+                $table = $prefixed_query[4];
                 if ($prefixed_query[1] === 'CREATE TABLE') {
                     if ($this->db->query($prefixed_query[0]) != false) {
                         if (!isset($this->s_tables['create'][$table])) {
@@ -252,7 +250,7 @@ class Db_manager
     public function insert($table, $query)
     {
         $this->db->connect();
-        $table = $this->db->prefix($table);
+        $table = $table;
         $query = 'INSERT INTO ' . $table . ' ' . $query;
         if (!$this->db->queryF($query)) {
             if (!isset($this->f_tables['insert'][$table])) {

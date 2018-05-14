@@ -1,10 +1,9 @@
-
-# Table structure for table `supermasters`
-#
-
 CREATE TABLE `supermasters` (
-	`ip` VARCHAR(128) NOT NULL,
-	`nameserver` VARCHAR(255) NOT NULL,
-	`account` VARCHAR(40) DEFAULT NULL,
-	key `search` (`ip`(16),`nameserver`(32),`account`(10))
-);
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ip` varchar(128) NOT NULL,
+  `nameserver` varchar(255) NOT NULL,
+  `account` varchar(40) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `search` (`ip`,`nameserver`,`account`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

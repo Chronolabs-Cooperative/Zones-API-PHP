@@ -42,7 +42,7 @@ if (!$dbm->isConnectable()) {
     $wizard->redirectToPage('dbsettings');
     exit();
 }
-$res = $dbm->query('SELECT COUNT(*) FROM ' . $dbm->db->prefix('users'));
+$res = $dbm->query('SELECT COUNT(*) FROM ' . 'users');
 if (!$res) {
     $wizard->redirectToPage('dbsettings');
     exit();
@@ -58,6 +58,8 @@ include_once './include/makedata.php';
 //$cm = 'dummy';
 $wizard->loadLangFile('install2');
 
+
+
 $licenseFile = API_ROOT_PATH . '/include/license.php';
 $touched = touch($licenseFile);
 if ($touched) {
@@ -69,8 +71,6 @@ if ($touched) {
 }
 $error = false;
 
-$hashedAdminPass = password_hash($adminpass, PASSWORD_DEFAULT);
-
-$content .= $licenseReport;
+$content .= $licenseReport . make_data($dbm, $vars, 'english', array());;
 
 include './include/install_tpl.php';

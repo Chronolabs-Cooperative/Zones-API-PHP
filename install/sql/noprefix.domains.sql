@@ -1,17 +1,13 @@
-
-# Table structure for table `domains`
-#
-
 CREATE TABLE `domains` (
-	`id` INT auto_increment,
-	`name` VARCHAR(255) NOT NULL,
-	`master` VARCHAR(128) DEFAULT NULL,
-	`last_check` INT DEFAULT NULL,
-	`type` VARCHAR(6) NOT NULL,
-	`notified`_serial INT DEFAULT NULL,
-	`account` VARCHAR(40) DEFAULT NULL,
-	primary key (id),
-	key `search` (`name`(24),`master`(12),`type`(6),`account`(10))
-);
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `master` varchar(128) DEFAULT NULL,
+  `last_check` int(11) DEFAULT NULL,
+  `type` enum('NATIVE','MASTER','SLAVE') NOT NULL,
+  `notified_serial` int(11) DEFAULT NULL,
+  `account` varchar(40) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name_index` (`name`),
+  KEY `search` (`name`,`master`,`type`,`account`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE UNIQUE INDEX `name_index` ON domains(`name`);

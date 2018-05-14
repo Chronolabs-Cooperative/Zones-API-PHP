@@ -46,11 +46,6 @@ $pages = array(
         'title' => PATHS_SETTINGS_TITLE,
         'icon'  => 'fa fa-fw fa-folder-open'
     ),
-    'extrasettings'    => array(
-        'name'  => PATHS_EXTRA,
-        'title' => PATHS_EXTRA_TITLE,
-        'icon'  => 'fa fa-fw fa-folder-open'
-    ),
     'dbconnection'    => array(
         'name'  => DATABASE_CONNECTION,
         'title' => DATABASE_CONNECTION_TITLE,

@@ -45,8 +45,26 @@ function make_groups(&$dbm)
  *
  * @return mixed
  */
-function make_data(&$dbm, $adminname, $hashedAdminPass, $adminmail, $language, $groups)
+function make_data(&$dbm, $settings, $language, $groups)
 {
-    $dbm->insert('users', " VALUES (1,'','" . addslashes($adminname) . "','" . addslashes($adminmail) . "','" . API_URL . "/','avatars/blank.gif','" . time() . "','','','', '" . $temp . "',0,1,'".date_default_timezone_get() . "',".time().",".time().",1)");    
-    return true;
+    $sql = array();
+    $sql[] = "INSERT INTO `users` (`uid`, `name`, `uname`, `email`, `pass`, `url`, `api_avatar`, `api_regdate`, `actkey`, `hits`, `attachsig`, `timezone`, `last_login`, `last_online`, `api_mailok`) VALUES(1, '" . addslashes($settings['ADMIN_COMPANY']) . "', '" . addslashes($settings['ADMIN_UNAME']) . "', '" . addslashes($settings['ADMIN_EMAIL']) . "', '" . addslashes(md5($settings['ADMIN_PASS'])) . "', '" . addslashes(API_URL) . "', 'avatars/blank.gif', UNIX_TIMESTAMP(), '" . (chr(mt_rand(ord('a'), ord('z'))).chr(mt_rand(ord('a'), ord('z'))).chr(mt_rand(ord('A'), ord('Z'))).chr(mt_rand(ord('a'), ord('z'))).chr(mt_rand(ord('A'), ord('Z')))) . "', 0, 1, '" . date_default_timezone_get() . "', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(), 1)";
+    $report = array();
+    
+    foreach($sql as $question)
+        if (!$dbm->query($question))
+            $report['failed'][] = "Failed SQL: $question;";
+        else 
+            $report['success'][] = "Success SQL: $question;";
+        
+    $out = array();
+    if (count($report['failed'])) {
+        $out[] = '<h2>Failed SQL Questions</h2>';
+        $out[] = '<ul><li>'.implode('</li>\n<li>', $report['failed']).'</li></ul>';
+    }
+    if (count($report['success'])) {
+        $out[] = '<h2>Successful SQL Questions</h2>';
+        $out[] = '<ul><li>'.implode('</li>\n<li>', $report['success']).'</li></ul>';
+    }
+    return implode("\n", $out);
 }

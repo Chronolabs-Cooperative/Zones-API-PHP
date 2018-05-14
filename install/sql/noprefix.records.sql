@@ -1,21 +1,16 @@
-
-# Table structure for table `records`
-#
-
 CREATE TABLE `records` (
-	`id` INT auto_increment,
-	`domain_id` INT DEFAULT NULL,
-	`name` VARCHAR(255) DEFAULT NULL,
-	`type` VARCHAR(6) DEFAULT NULL,
-	`content` VARCHAR(255) DEFAULT NULL,
-	`ttl` INT DEFAULT NULL,
-	`prio` INT DEFAULT NULL,
-	`change_date` INT DEFAULT NULL,
-	primary key(id),
-	key `search` (`domain_id`,`name`(32),`type`(6),`content`(32)),
-	key `numeric` (`ttl`,`prio`,`change_date`)
-);
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `domain_id` int(11) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `type` enum('A','AAAA','AFSDB','ALIAS','CAA','CERT','CDNSKEY','CDS','CNAME','DNSKEY','DNAME','DS','HINFO','KEY','LOC','MX','NAPTR','NS','NSEC','NSEC3','NSEC3PARAM','OPENPGPKEY','PTR','RP','RRSIG','SOA','SPF','SSHFP','SRV','TKEY','TSIG','TLSA','SMIMEA','TXT','URI') DEFAULT NULL,
+  `content` varchar(450) DEFAULT NULL,
+  `ttl` int(11) DEFAULT NULL,
+  `prio` int(11) DEFAULT NULL,
+  `change_date` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `rec_name_index` (`name`),
+  KEY `nametype_index` (`name`,`type`),
+  KEY `domain_id` (`domain_id`),
+  KEY `search` (`domain_id`,`name`,`type`,`content`,`prio`,`ttl`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-CREATE INDEX `rec_name_index` ON records(`name`);
-CREATE INDEX `nametype_index` ON records(`name`,`type`);
-CREATE INDEX `domain_id` ON records(`domain_id`);

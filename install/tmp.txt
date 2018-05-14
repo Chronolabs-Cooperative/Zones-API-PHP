@@ -1,5 +1,5 @@
 Array
 (
-    [folder] => Ubuntu Trusty (14.04)
-    [typal] => smtp.html
+    [folder] => Ubuntu Xenial (16.04.x)
+    [typal] => powerdns.html
 )
