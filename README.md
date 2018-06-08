@@ -2,7 +2,7 @@
 
 # DNS Zones Propogation REST API Services
 
-## Version: 1.0.3 (pre-beta)
+## Version: 1.0.7 (stable)
 
 ### Author: Dr. Simon Antony Roberts <simon@snails.email>
 
@@ -160,19 +160,9 @@ The follow lines go in your API_ROOT_PATH/.htaccess
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^v([0-9]{1,2})/authkey.api ./index.php?version=$1&mode=authkey [L,NC,QSA]
     RewriteRule ^v([0-9]{1,2})/([0-9a-z]{32})/(supermaster|domains|zones).api ./index.php?version=$1&authkey=$2&mode=$3 [L,NC,QSA]
-    RewriteRule ^v([0-9]{1,2})/([0-9a-z]{32})/(masters|domains)/(raw|html|serial|json|xml).api ./index.php?version=$1&authkey=$2&mode=$3&format=$4 [L,NC,QSA]
+    RewriteRule ^v([0-9]{1,2})/([0-9a-z]{32})/(masters|domains|users)/(raw|html|serial|json|xml).api ./index.php?version=$1&authkey=$2&mode=$3&format=$4 [L,NC,QSA]
     RewriteRule ^v([0-9]{1,2})/([0-9a-z]{32})/([0-9a-z]{32})/(zones)/(raw|html|serial|json|xml).api ./index.php?version=$1&authkey=$2&key=$3&mode=$4&format=$5 [L,NC,QSA]
-    RewriteRule ^v([0-9]{1,2})/([0-9a-z]{32})/([0-9a-z]{32})/(edit|delete)/(zones|domain|master)/(raw|html|serial|json|xml).api ./index.php?version=$1&authkey=$2&key=$3&mode=$4&type=$5&format=$6 [L,NC,QSA]
-    
-## Scheduled Cron Job Details.,
-    
-There is one or more cron jobs that is scheduled task that need to be added to your system kernel when installing this API, the following command is before you install the chronological jobs with crontab in debain/ubuntu
-    
-    Execute:-
-    $ sudo crontab -e
-
-### CronTab Entry:
-    
+    RewriteRule ^v([0-9]{1,2})/([0-9a-z]{32})/([0-9a-z]{32})/(edit|delete)/(zones|domain|master|user)/(raw|html|serial|json|xml).api ./index.php?version=$1&authkey=$2&key=$3&mode=$4&type=$5&format=$6 [L,NC,QSA]
     
 ## Licensing
 
@@ -181,3 +171,7 @@ There is one or more cron jobs that is scheduled task that need to be added to y
 # Installation
 
 Copy the contents of this archive/repository to the run time environment, configue apache2, ngix or iis to resolve the path of this repository and run the HTML Installer.
+
+## Clients for the API
+
+There is a XOOPS Module client for this api it is or will be found at the following path:~ https://github.com/Chronolabs-Cooperative/ZonesAPIClient-Module-Xoops25

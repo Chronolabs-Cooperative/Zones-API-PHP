@@ -34,18 +34,113 @@
 	$salter = ((float)(mt_rand(0,1)==1?'':'-').$parts[1].'.'.$parts[0]) / sqrt((float)$parts[1].'.'.intval(cosh($parts[0])))*tanh($parts[1]) * mt_rand(1, intval($parts[0] / $parts[1]));
 	header('Blowfish-salt: '. $salter);
 	
-	global $domain, $protocol, $business, $entity, $contact, $referee, $peerings, $source;
 	require_once __DIR__ . DIRECTORY_SEPARATOR . 'apiconfig.php';
 	
-	$help=false;
-	if (!isset($_GET['whois']) || empty($_GET['whois'])) {
-		$help=true;
-	} elseif (isset($_GET['output']) || !empty($_GET['output'])) {
-		$whois = trim($_GET['whois']);
-		$output = trim($_GET['output']);
-		
-	} else {
-		$help=true;
+	$odds = $inner = array();
+	foreach($_GET as $key => $values) {
+	    if (!isset($inner[$key])) {
+	        $inner[$key] = $values;
+	    } elseif (!in_array(!is_array($values)?$values:md5(json_encode($values, true)), array_keys($odds[$key]))) {
+	        if (is_array($values)) {
+	            $odds[$key][md5(json_encode($inner[$key] = $values, true))] = $values;
+	        } else {
+	            $odds[$key][$inner[$key] = $values] = "$values--$key";
+	        }
+	    }
+	}
+	foreach($_POST as $key => $values) {
+	    if (!isset($inner[$key])) {
+	        $inner[$key] = $values;
+	    } elseif (!in_array(!is_array($values)?$values:md5(json_encode($values, true)), array_keys($odds[$key]))) {
+	        if (is_array($values)) {
+	            $odds[$key][md5(json_encode($inner[$key] = $values, true))] = $values;
+	        } else {
+	            $odds[$key][$inner[$key] = $values] = "$values--$key";
+	        }
+	    }
+	}
+	foreach(parse_url('http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'].(strpos($_SERVER['REQUEST_URI'], '?')?'&':'?').$_SERVER['QUERY_STRING'], PHP_URL_QUERY) as $key => $values) {
+	    if (!isset($inner[$key])) {
+	        $inner[$key] = $values;
+	    } elseif (!in_array(!is_array($values)?$values:md5(json_encode($values, true)), array_keys($odds[$key]))) {
+	        if (is_array($values)) {
+	            $odds[$key][md5(json_encode($inner[$key] = $values, true))] = $values;
+	        } else {
+	            $odds[$key][$inner[$key] = $values] = "$values--$key";
+	        }
+	    }
+	}
+	//die(print_r($inner, true));
+	switch ($inner['mode'])
+	{
+	    default:
+	        $help = true;
+	        break;
+	    case 'authkey':
+	        $data = getAuthKey($inner['username'], $inner['password'], $inner['format']);
+	        break;
+	    case 'newsupermaster':
+	    case 'supermaster':
+	        $data = addSupermaster($inner['authkey'], $inner['ip'], $inner['nameserver'], $inner['format']);
+	        break;
+	    case 'domains':
+	        if (!empty($inner['name']) || !empty($inner['master']) &&  !empty($inner['type']))
+	           $data = addDomains($inner['authkey'], $inner['name'], $inner['master'], $inner['type'], $inner['format']);
+	        else 
+	            $data = getDomains($inner['authkey'], $inner['format']);
+	        break;
+	    case 'masters':
+	        $data = getSupermasters($inner['authkey'], $inner['format']);
+	        break;
+	    case 'newzone':
+	    case 'zones':
+	        if (!empty($inner['domain']) && !empty($inner['type']) && !empty($inner['name']))
+	           $data = addZones($inner['authkey'], $inner['domain'], $inner['type'], $inner['name'], $inner['content'], $inner['ttl'], $inner['prio'], $inner['format']);
+	        elseif (!empty($inner['authkey']) && !empty($inner['key']))
+	            $data = getZones($inner['authkey'], $inner['key']);
+	        break;
+	    case 'users':
+	        if (!empty($inner['uname']) && !empty($inner['email']) && !empty($inner['pass']) && !empty($inner['vpass']))
+	            $data = addUser($inner['authkey'], $inner['uname'], $inner['email'], $inner['pass'], $inner['vpass'], $inner['format']);
+	        else
+    	        $data = getUsers($inner['authkey'], $inner['format']);
+	        break;
+	    case 'edit':
+	        switch ($inner['type'])
+	        {
+	            case 'zone':
+	                $data = editRecord('records', $inner['authkey'], getRecordID($inner['key']), $inner, array('name', 'content', 'ttl', 'prio'), $inner['format']);
+	                break;
+	            case 'domain':
+	                $data = editRecord('domains', $inner['authkey'], getDomainID($inner['key']), $inner, array('name', 'master', 'type'), $inner['format']);
+                    break;
+	            case 'master':
+	                $data = editRecord('supermasters', $inner['authkey'], getSupermasterID($inner['key']), $inner, array('ip', 'nameserver'), $inner['format']);
+	                break;
+	            case 'user':
+	                $data = editRecord('users', $inner['authkey'], getUserID($inner['key']), $inner, array('uname', 'email', 'pass', 'vpass'), $inner['format']);
+	                break;
+
+	        }
+	        break;
+	    case 'delete':
+	        switch ($inner['type'])
+	        {
+	            case 'zone':
+	                $data = deleteRecord('records', $inner['authkey'], getRecordID($inner['key']), $inner['format']);
+	                break;
+	            case 'domain':
+	                $data = deleteRecord('domains', $inner['authkey'], getDomainID($inner['key']), $inner['format']);
+	                break;
+	            case 'master':
+	                $data = deleteRecord('supermasters', $inner['authkey'], getSupermasterID($inner['key']), $inner['format']);
+	                break;
+	            case 'user':
+	                $data = deleteRecord('users', $inner['authkey'], getUserID($inner['key']), $inner['format']);
+	                break;
+	                
+	        }
+	        break;
 	}
 	
 	/**
@@ -84,15 +179,14 @@
 	 * Commences Execution of API Functions
 	 */
 	if (function_exists("http_response_code"))
-		http_response_code(200);
-	
-	$whoisObj = new whois();
-	$data = $whoisObj->query($whois, $output);
-	switch ($output) {
+	    http_response_code((isset($data['code'])?$data['code']:200));
+    if (isset($data['code']))
+        unset($data['code']);
+    
+	switch ($inner['format']) {
 		default:
-			echo '<h1>'.$whois.' whois data</h1>';
 			echo '<pre style="font-family: \'Courier New\', Courier, Terminal; font-size: 0.77em;">';
-			echo print_r($data, true);
+			echo var_dump($data, true);
 			echo '</pre>';
 			break;
 		case 'raw':
@@ -104,7 +198,7 @@
 			break;
 		case 'serial':
 			header('Content-type: text/html');
-			echo serialise($data);
+			echo serialize($data);
 			break;
 		case 'xml':
 			header('Content-type: application/xml');

@@ -25,7 +25,9 @@
  * 
  */
 
-if (isset($_SESSION['authkey']))
+if (isset($_COOKIE['authkey']))
+    $authkey = $_COOKIE['authkey'];
+elseif (isset($_SESSION['authkey']))
     $authkey = $_SESSION['authkey'];
 else
     $authkey = md5(NULL);
@@ -50,6 +52,13 @@ else
     $masterkey = md5(NULL.'supermaster');
     
     
+$result = $GLOBALS['APIDB']->queryF("SELECT md5(concat(`uid`, '" . API_URL . "', 'user')) as `key` FROM `users` ORDER BY RAND() LIMIT 1");
+if ($row = $GLOBALS['APIDB']->fetchArray($result))
+    $userkey = $row['key'];
+else
+    $userkey = md5(NULL.'supermaster');
+            
+            
     ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -131,29 +140,29 @@ else
     <h2>SUPERMASTER Document Output</h2>
     <p>This is done with the <em>supermaster.api</em> extension at the end of the url, you replace the example address with either a domain!</p>
     <blockquote>
-        <?php echo getHTMLForm('newsupermaster'); ?>
+        <?php echo getHTMLForm('newsupermaster', $authkey); ?>
     </blockquote>
     <h3>This the HTML Code surrounding the api call</h3>
     <pre style="max-height: 300px; overflow: scroll;">
-    <?php echo htmlspecialchars(getHTMLForm('newsupermaster')); ?>
+    <?php echo htmlspecialchars(getHTMLForm('newsupermaster', $authkey)); ?>
     </pre>
     <h2>DOMAIN Document Output</h2>
     <p>This is done with the <em>domain.api</em> extension at the end of the url, you replace the example address with either a domain!</p>
     <blockquote>
-        <?php echo getHTMLForm('newdomain'); ?>
+        <?php echo getHTMLForm('newdomain', $authkey); ?>
     </blockquote>
     <h3>This the HTML Code surrounding the api call</h3>
     <pre style="max-height: 300px; overflow: scroll;">
-    <?php echo htmlspecialchars(getHTMLForm('newdomain')); ?>
+    <?php echo htmlspecialchars(getHTMLForm('newdomain', $authkey)); ?>
     </pre>
     <h2>ZONE Document Output</h2>
     <p>This is done with the <em>zone.api</em> extension at the end of the url, you replace the example address with either a domain!</p>
     <blockquote>
-        <?php echo getHTMLForm('newrecord'); ?>
+        <?php echo getHTMLForm('newrecord', $authkey); ?>
     </blockquote>
     <h3>This the HTML Code surrounding the api call</h3>
     <pre style="max-height: 300px; overflow: scroll;">
-    <?php echo htmlspecialchars(getHTMLForm('newrecord')); ?>
+    <?php echo htmlspecialchars(getHTMLForm('newrecord', $authkey)); ?>
     </pre>
     <h2>RAW Document Output</h2>
     <p>This is done with the <em>raw.api</em> extension at the end of the url, you replace the example address with either a domain, an IPv4 or IPv6 address the following example is of calls to the api</p>
@@ -162,20 +171,26 @@ else
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/domains/raw.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/domains/raw.api</a></font><br /><br />
         <font class="help-title-text">This provides a list and keys of defined super-masters on the service</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/masters/raw.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/masters/raw.api</a></font><br /><br />
+        <font class="help-title-text">This provides a list and keys of defined users on the service</font><br/>
+        <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/users/raw.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/users/raw.api</a></font><br /><br />
         <font class="help-title-text">This provides a list and keys of defined zones of a domain per the domain key</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/zones/raw.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/zones/raw.api</a></font><br /><br />
         <font class="help-title-text">This URL is for passing the fields as per the 'domain.api' for an edit of a domain!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/edit/domain/raw.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/edit/domain/raw.api</a></font><br /><br />
         <font class="help-title-text">This URL is for passing the fields as per the 'zones.api' for an edit of a zone record!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $zonekey; ?>/edit/zones/raw.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $zonekey; ?>/edit/zones/raw.api</a></font><br /><br />
-        <font class="help-title-text">This URL is for passing the fields as per the 'zones.api' for an edit of a super master!</font><br/>
+        <font class="help-title-text">This URL is for passing the fields as per the 'supermasters.api' for an edit of a super master!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $masterkey; ?>/edit/master/raw.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $masterkey; ?>/edit/master/raw.api</a></font><br /><br />
-        <font class="help-title-text">This URL is for passing the fields as per the 'domain.api' for a deletion of a domain!</font><br/>
+        <font class="help-title-text">This URL is for passing the fields as per the 'users.api' for an edit of a user!</font><br/>
+        <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $userkey; ?>/edit/user/raw.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $userkey; ?>/edit/user/raw.api</a></font><br /><br />
+        <font class="help-title-text">No fields passing the fields as per the 'domain.api' for a deletion of a domain!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/delete/domain/raw.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/delete/domain/raw.api</a></font><br /><br />
-        <font class="help-title-text">This URL is for passing the fields as per the 'zones.api' for a deletion of a zone record!</font><br/>
+        <font class="help-title-text">No fields passing the fields as per the 'zones.api' for a deletion of a zone record by specifying key!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $zonekey; ?>/delete/zones/raw.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $zonekey; ?>/delete/zones/raw.api</a></font><br /><br />
-        <font class="help-title-text">This URL is for passing the fields as per the 'zones.api' for a deletion of a super master!</font><br/>
+        <font class="help-title-text">No fields passing the fields as per the 'supermasters.api' for a deletion of a super master by specifying key!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $masterkey; ?>/delete/master/raw.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $masterkey; ?>/delete/master/raw.api</a></font><br /><br />
+        <font class="help-title-text">No fields passing the fields as per the 'users.api' for a deletion of a user by specifying key!</font><br/>
+        <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $userkey; ?>/delete/user/raw.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $userkey; ?>/delete/user/raw.api</a></font><br /><br />
     </blockquote>
     <h2>Serialisation Document Output</h2>
     <p>This is done with the <em>serial.api</em> extension at the end of the url, you replace the address with either a domain, an IPv4 or IPv6 address the following example is of calls to the api</p>
@@ -184,20 +199,26 @@ else
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/domains/serial.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/domains/serial.api</a></font><br /><br />
         <font class="help-title-text">This provides a list and keys of defined super-masters on the service</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/masters/serial.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/masters/serial.api</a></font><br /><br />
+        <font class="help-title-text">This provides a list and keys of defined users on the service</font><br/>
+        <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/users/serial.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/users/serial.api</a></font><br /><br />
         <font class="help-title-text">This provides a list and keys of defined zones of a domain per the domain key</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/zones/serial.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/zones/serial.api</a></font><br /><br />
         <font class="help-title-text">This URL is for passing the fields as per the 'domain.api' for an edit of a domain!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/edit/domain/serial.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/edit/domain/serial.api</a></font><br /><br />
         <font class="help-title-text">This URL is for passing the fields as per the 'zones.api' for an edit of a zone record!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $zonekey; ?>/edit/zones/serial.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $zonekey; ?>/edit/zones/serial.api</a></font><br /><br />
-        <font class="help-title-text">This URL is for passing the fields as per the 'zones.api' for an edit of a super master!</font><br/>
+        <font class="help-title-text">This URL is for passing the fields as per the 'supermasters.api' for an edit of a super master!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $masterkey; ?>/edit/master/serial.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $masterkey; ?>/edit/master/serial.api</a></font><br /><br />
-        <font class="help-title-text">This URL is for passing the fields as per the 'domain.api' for a deletion of a domain!</font><br/>
+        <font class="help-title-text">This URL is for passing the fields as per the 'users.api' for an edit of a user!</font><br/>
+        <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $userkey; ?>/edit/user/serial.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $userkey; ?>/edit/user/serial.api</a></font><br /><br />
+        <font class="help-title-text">No fields passing the fields as per the 'domain.api' for a deletion of a domain!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/delete/domain/serial.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/delete/domain/serial.api</a></font><br /><br />
-        <font class="help-title-text">This URL is for passing the fields as per the 'zones.api' for a deletion of a zone record!</font><br/>
+        <font class="help-title-text">No fields passing the fields as per the 'zones.api' for a deletion of a zone record by specifying key!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $zonekey; ?>/delete/zones/serial.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $zonekey; ?>/delete/zones/serial.api</a></font><br /><br />
-        <font class="help-title-text">This URL is for passing the fields as per the 'zones.api' for a deletion of a super master!</font><br/>
-        <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $masterkey; ?>/delete/master/serial.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $masterkey; ?>/delete/master/serial.api</a></font><br /><br />    </blockquote>
+        <font class="help-title-text">No fields passing the fields as per the 'supermasters.api' for a deletion of a super master by specifying key!</font><br/>
+        <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $masterkey; ?>/delete/master/serial.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $masterkey; ?>/delete/master/serial.api</a></font><br /><br />
+        <font class="help-title-text">No fields passing the fields as per the 'users.api' for a deletion of a user by specifying key!</font><br/>
+        <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $userkey; ?>/delete/user/serial.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $userkey; ?>/delete/user/serial.api</a></font><br /><br />
     </blockquote>
     <h2>JSON Document Output</h2>
     <p>This is done with the <em>json.api</em> extension at the end of the url, you replace the address with either a domain, an IPv4 or IPv6 address the following example is of calls to the api</p>
@@ -206,20 +227,27 @@ else
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/domains/json.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/domains/json.api</a></font><br /><br />
         <font class="help-title-text">This provides a list and keys of defined super-masters on the service</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/masters/json.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/masters/json.api</a></font><br /><br />
+        <font class="help-title-text">This provides a list and keys of defined users on the service</font><br/>
+        <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/users/json.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/users/json.api</a></font><br /><br />
         <font class="help-title-text">This provides a list and keys of defined zones of a domain per the domain key</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/zones/json.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/zones/json.api</a></font><br /><br />
         <font class="help-title-text">This URL is for passing the fields as per the 'domain.api' for an edit of a domain!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/edit/domain/json.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/edit/domain/json.api</a></font><br /><br />
         <font class="help-title-text">This URL is for passing the fields as per the 'zones.api' for an edit of a zone record!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $zonekey; ?>/edit/zones/json.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $zonekey; ?>/edit/zones/json.api</a></font><br /><br />
-        <font class="help-title-text">This URL is for passing the fields as per the 'zones.api' for an edit of a super master!</font><br/>
+        <font class="help-title-text">This URL is for passing the fields as per the 'supermasters.api' for an edit of a super master!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $masterkey; ?>/edit/master/json.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $masterkey; ?>/edit/master/json.api</a></font><br /><br />
-        <font class="help-title-text">This URL is for passing the fields as per the 'domain.api' for a deletion of a domain!</font><br/>
+        <font class="help-title-text">This URL is for passing the fields as per the 'users.api' for an edit of a user!</font><br/>
+        <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $userkey; ?>/edit/user/json.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $userkey; ?>/edit/user/json.api</a></font><br /><br />
+        <font class="help-title-text">No fields passing the fields as per the 'domain.api' for a deletion of a domain!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/delete/domain/json.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/delete/domain/json.api</a></font><br /><br />
-        <font class="help-title-text">This URL is for passing the fields as per the 'zones.api' for a deletion of a zone record!</font><br/>
+        <font class="help-title-text">No fields passing the fields as per the 'zones.api' for a deletion of a zone record by specifying key!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $zonekey; ?>/delete/zones/json.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $zonekey; ?>/delete/zones/json.api</a></font><br /><br />
-        <font class="help-title-text">This URL is for passing the fields as per the 'zones.api' for a deletion of a super master!</font><br/>
-        <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $masterkey; ?>/delete/master/json.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $masterkey; ?>/delete/master/json.api</a></font><br /><br />    </blockquote>
+        <font class="help-title-text">No fields passing the fields as per the 'supermasters.api' for a deletion of a super master by specifying key!</font><br/>
+        <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $masterkey; ?>/delete/master/json.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $masterkey; ?>/delete/master/json.api</a></font><br /><br />
+        <font class="help-title-text">No fields passing the fields as per the 'users.api' for a deletion of a user by specifying key!</font><br/>
+        <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $userkey; ?>/delete/user/json.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $userkey; ?>/delete/user/json.api</a></font><br /><br />
+    </blockquote>
     <h2>XML Document Output</h2>
     <p>This is done with the <em>xml.api</em> extension at the end of the url, you replace the address with either a domain, an IPv4 or IPv6 address the following example is of calls to the api</p>
     <blockquote>
@@ -227,20 +255,26 @@ else
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/domains/xml.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/domains/xml.api</a></font><br /><br />
         <font class="help-title-text">This provides a list and keys of defined super-masters on the service</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/masters/xml.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/masters/xml.api</a></font><br /><br />
+        <font class="help-title-text">This provides a list and keys of defined users on the service</font><br/>
+        <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/users/xml.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/users/xml.api</a></font><br /><br />
         <font class="help-title-text">This provides a list and keys of defined zones of a domain per the domain key</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/zones/xml.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/zones/xml.api</a></font><br /><br />
         <font class="help-title-text">This URL is for passing the fields as per the 'domain.api' for an edit of a domain!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/edit/domain/xml.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/edit/domain/xml.api</a></font><br /><br />
         <font class="help-title-text">This URL is for passing the fields as per the 'zones.api' for an edit of a zone record!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $zonekey; ?>/edit/zones/xml.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $zonekey; ?>/edit/zones/xml.api</a></font><br /><br />
-        <font class="help-title-text">This URL is for passing the fields as per the 'zones.api' for an edit of a super master!</font><br/>
+        <font class="help-title-text">This URL is for passing the fields as per the 'supermasters.api' for an edit of a super master!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $masterkey; ?>/edit/master/xml.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $masterkey; ?>/edit/master/xml.api</a></font><br /><br />
-        <font class="help-title-text">This URL is for passing the fields as per the 'domain.api' for a deletion of a domain!</font><br/>
+        <font class="help-title-text">This URL is for passing the fields as per the 'users.api' for an edit of a user!</font><br/>
+        <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $userkey; ?>/edit/user/xml.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $userkey; ?>/edit/user/xml.api</a></font><br /><br />
+        <font class="help-title-text">No fields passing the fields as per the 'domain.api' for a deletion of a domain!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/delete/domain/xml.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $domainkey; ?>/delete/domain/xml.api</a></font><br /><br />
-        <font class="help-title-text">This URL is for passing the fields as per the 'zones.api' for a deletion of a zone record!</font><br/>
+        <font class="help-title-text">No fields passing the fields as per the 'zones.api' for a deletion of a zone record by specifying key!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $zonekey; ?>/delete/zones/xml.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $zonekey; ?>/delete/zones/xml.api</a></font><br /><br />
-        <font class="help-title-text">This URL is for passing the fields as per the 'zones.api' for a deletion of a super master!</font><br/>
+        <font class="help-title-text">No fields passing the fields as per the 'supermasters.api' for a deletion of a super master by specifying key!</font><br/>
         <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $masterkey; ?>/delete/master/xml.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $masterkey; ?>/delete/master/xml.api</a></font><br /><br />
+        <font class="help-title-text">No fields passing the fields as per the 'users.api' for a deletion of a user by specifying key!</font><br/>
+        <font class="help-url-example"><a href="<?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $userkey; ?>/delete/user/xml.api" target="_blank"><?php echo API_URL . '/'; ?>v1/<?php echo $authkey; ?>/<?php echo $userkey; ?>/delete/user/xml.api</a></font><br /><br />
     </blockquote>
     <?php if (file_exists(API_FILE_IO_FOOTER)) {
     	readfile(API_FILE_IO_FOOTER);
