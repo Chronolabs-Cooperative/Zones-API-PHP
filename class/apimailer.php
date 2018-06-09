@@ -76,7 +76,7 @@ class APIMailer
      *
      * @return APIMailer
      */
-    function APIMailer($from, $fromname, $method = 'SMTPAuth')
+    function __construct($from, $fromname, $method = 'SMTPAuth')
     {
         $this->multimailer = new APIMultiMailer($from, $fromname, $method);
         $this->reset();

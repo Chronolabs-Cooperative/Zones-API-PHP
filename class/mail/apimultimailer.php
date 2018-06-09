@@ -131,7 +131,7 @@ class APIMultiMailer extends PHPMailer
      * @access public
      * @return void
      */
-    function APIMultiMailer($from, $fromName, $method = 'mail')
+    function __construct($from, $fromName, $method = 'mail')
     {
         $this->From = $from;
         $this->FromName = $fromName;
