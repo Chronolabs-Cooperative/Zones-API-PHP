@@ -44,10 +44,10 @@ if (!function_exists("getAuthKey")) {
         {
             $time = time();
             if ($last_login < $time - 3600) {
-                $GLOBALS['APIDB']->queryF("UPDATE `users` SET `last_login` = '$time', `hits` = `hits` + 1 WHERE `uid` = '$uid'");
+                $GLOBALS['APIDB']->queryF("UPDATE `users` SET `last_login` = '$time', `hits` = `hits` + 1, `actkey` = '" . substr(md5(mt_rand(-time(), time())), 32 - ($len = mt_rand(3,6)), $len) . "' WHERE `uid` = '$uid'");
                 $last_login = $time;
             }
-            $sql = "SELECT md5(concat(`uid`, `uname`, `email`, `last_login`)) FROM `users` WHERE `uid` = '$uid'";
+            $sql = "SELECT md5(concat(`uid`, `uname`, `email`, `last_login`, `actkey`)) FROM `users` WHERE `uid` = '$uid'";
             list($authkey) = $GLOBALS['APIDB']->fetchRow($GLOBALS['APIDB']->queryF($sql));
             $_SESSION['authkey'] = $authkey;
             setcookie('authkey', $_SESSION['authkey'], 3600 + $time, '/', API_COOKIE_DOMAIN);
@@ -167,7 +167,7 @@ if (!function_exists("checkAuthKey")) {
      */
     function checkAuthKey($authkey = '')
     {
-        $sql = "SELECT `uid`, `uname` FROM `users` WHERE '$authkey' LIKE md5(concat(`uid`, `uname`, `email`, `last_login`))";
+        $sql = "SELECT `uid`, `uname` FROM `users` WHERE '$authkey' LIKE md5(concat(`uid`, `uname`, `email`, `last_login`, `actkey`))";
         list($uid, $uname) = $GLOBALS['APIDB']->fetchRow($GLOBALS['APIDB']->queryF($sql));
         if ($uid <> 0 && !empty($uname))
         {
@@ -348,10 +348,10 @@ if (!function_exists("addUser")) {
                     $mail->sendMail($email, array(), array(), "Zone API Creditials as established by: " . $GLOBALS['account'], $body, array(), "", true);
                     
                 } else {
-                    $return = array('code' => 501, 'recordkey' => md5(NULL. 'user'), 'errors' => array($GLOBALS['APIDB']->errno() => $GLOBALS['APIDB']->error()));
+                    $return = array('code' => 501, 'userkey' => md5(NULL. 'user'), 'errors' => array($GLOBALS['APIDB']->errno() => $GLOBALS['APIDB']->error()));
                 }
             } else {
-                $return = array('code' => 501, 'recordkey' => md5(NULL. 'user'), 'errors' => array('107' => 'User Record Already Exists!!!'));
+                $return = array('code' => 501, 'userkey' => md5(NULL. 'user'), 'errors' => array('107' => 'User Record Already Exists!!!'));
             }
         }
         return $return;
