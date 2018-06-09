@@ -197,7 +197,7 @@ if (!function_exists("addSupermaster")) {
         $return = checkAuthKey($authkey);
         if (empty($return))
         {
-            $sql = "SELECT COUNT(*) FROM `supermasters` WHERE `ip` LIKE '$ip' OR `nameserver` LIKE '$nameserver'";
+            $sql = "SELECT COUNT(*) FROM `supermasters` WHERE `ip` LIKE '$ip' AND `nameserver` LIKE '$nameserver'";
             list($count) = $GLOBALS['APIDB']->fetchRow($GLOBALS['APIDB']->queryF($sql));
             if ($count==0)
             {
@@ -233,7 +233,7 @@ if (!function_exists("addDomains")) {
         $return = checkAuthKey($authkey);
         if (empty($return))
         {
-            $sql = "SELECT COUNT(*) FROM `domains` WHERE (`name` LIKE '$name' AND `type` LIKE '$type') OR (`master` LIKE '$master' AND `type` LIKE '$type')";
+            $sql = "SELECT COUNT(*) FROM `domains` WHERE (`name` LIKE '$name' AND `master` LIKE '$master' AND `type` LIKE '$type')";
             list($count) = $GLOBALS['APIDB']->fetchRow($GLOBALS['APIDB']->queryF($sql));
             if ($count==0)
             {
@@ -275,7 +275,7 @@ if (!function_exists("addZones")) {
             
             if (in_array($type, array('A', 'AAAA', 'AFSDB', 'ALIAS', 'CAA', 'CERT', 'CDNSKEY', 'CDS', 'CNAME', 'DNSKEY', 'DNAME', 'DS', 'HINFO', 'KEY', 'LOC', 'MX', 'NAPTR', 'NS', 'NSEC', 'NSEC3', 'NSEC3PARAM', 'OPENPGPKEY', 'PTR', 'RP', 'RRSIG', 'SOA', 'SPF', 'SSHFP', 'SRV', 'TKEY', 'TSIG', 'TLSA', 'SMIMEA', 'TXT', 'URI')))
             {
-                $sql = "SELECT COUNT(*) FROM `records` WHERE `domain_id` = '$domainid' AND (`name` LIKE '" .$GLOBALS['APIDB']->escape($name). "' AND `type` LIKE '$type') OR (`name` LIKE '" .$GLOBALS['APIDB']->escape($name). "' AND `content` LIKE '" .$GLOBALS['APIDB']->escape($content). "' AND `type` LIKE '$type')";
+                $sql = "SELECT COUNT(*) FROM `records` WHERE `domain_id` = '$domainid' AND (`name` LIKE '" .$GLOBALS['APIDB']->escape($name). "' AND `content` LIKE '" .$GLOBALS['APIDB']->escape($content). "' AND `type` LIKE '$type')";
                 list($count) = $GLOBALS['APIDB']->fetchRow($GLOBALS['APIDB']->queryF($sql));
                 if ($count==0)
                 {
@@ -400,7 +400,7 @@ if (!function_exists("editRecord")) {
                     break;
                 case 'records':
                     $old = $GLOBALS["APIDB"]->fetchArray($GLOBALS['APIDB']->queryF("SELECT * FROM `$table` WHERE `id` = '$id'"));
-                    $sql = "SELECT COUNT(*) FROM `$table` WHERE (`name` LIKE '" .$GLOBALS['APIDB']->escape($vars['name']). "' AND `type` LIKE '" . $old['type'] . "') OR (`content` LIKE '" .$GLOBALS['APIDB']->escape($vars['content']). "' AND `type` LIKE '" . $old['type'] . "'))";
+                    $sql = "SELECT COUNT(*) FROM `$table` WHERE (`name` LIKE '" .$GLOBALS['APIDB']->escape($vars['name']). "' AND `content` LIKE '" .$GLOBALS['APIDB']->escape($vars['content']). "' AND `type` LIKE '" . $old['type'] . "'))";
                     break;
                 case 'domains':
                     $old = $GLOBALS["APIDB"]->fetchArray($GLOBALS['APIDB']->queryF("SELECT * FROM `$table` WHERE `id` = '$id'"));
@@ -408,7 +408,7 @@ if (!function_exists("editRecord")) {
                     break;
                 case 'supermasters':
                     $old = $GLOBALS["APIDB"]->fetchArray($GLOBALS['APIDB']->queryF("SELECT * FROM `$table` WHERE `id` = '$id'"));
-                    $sql = "SELECT COUNT(*) FROM `$table` WHERE (`ip` LIKE '" .$GLOBALS['APIDB']->escape($vars['ip']). "') OR (`nameserver` LIKE '" .$GLOBALS['APIDB']->escape($vars['nameserver']). "'))";
+                    $sql = "SELECT COUNT(*) FROM `$table` WHERE (`ip` LIKE '" .$GLOBALS['APIDB']->escape($vars['ip']). "' AND `nameserver` LIKE '" .$GLOBALS['APIDB']->escape($vars['nameserver']). "'))";
                     break;
             }
             list($count) = $GLOBALS['APIDB']->fetchRow($GLOBALS['APIDB']->queryF($sql));
