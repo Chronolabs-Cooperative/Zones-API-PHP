@@ -1,3 +1,5 @@
+DROP TABLE `peers`;
+
 CREATE TABLE `peers` (
   `pid` mediumint(32) unsigned NOT NULL AUTO_INCREMENT,
   `uid` mediumint(8) unsigned NOT NULL DEFAULT '0',

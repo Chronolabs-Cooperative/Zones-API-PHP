@@ -1,3 +1,5 @@
+DROP TABLE `supermasters`;
+
 CREATE TABLE `supermasters` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `ip` varchar(128) NOT NULL,

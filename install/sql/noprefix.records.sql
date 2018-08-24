@@ -1,3 +1,5 @@
+DROP TABLE `records`;
+
 CREATE TABLE `records` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `domain_id` int(11) DEFAULT NULL,
@@ -7,10 +9,13 @@ CREATE TABLE `records` (
   `ttl` int(11) DEFAULT NULL,
   `prio` int(11) DEFAULT NULL,
   `change_date` int(11) DEFAULT NULL,
+  `disabled` tinyint(1) DEFAULT 0,
+  `ordername` varchar(255) DEFAULT '',
+  `auth` tinyint(1) DEFAULT 0,
   PRIMARY KEY (`id`),
-  KEY `rec_name_index` (`name`),
-  KEY `nametype_index` (`name`,`type`),
-  KEY `domain_id` (`domain_id`),
-  KEY `search` (`domain_id`,`name`,`type`,`prio`,`ttl`)
+  KEY `rec_name_index` (`disabled`,`name`),
+  KEY `nametype_index` (`disabled`,`name`,`type`),
+  KEY `domain_id` (`domain_id`,`type`),
+  KEY `search` (`disabled`,`ordername`,`domain_id`,`name`,`type`,`prio`,`ttl`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -1,3 +1,5 @@
+DROP TABLE `users`;
+
 CREATE TABLE `users` (
   `uid` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(60) NOT NULL DEFAULT '',
