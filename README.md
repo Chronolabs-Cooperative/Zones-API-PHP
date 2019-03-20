@@ -2,7 +2,7 @@
 
 # DNS Zones Propogation REST API Services
 
-## Version: 1.0.7 (stable)
+## Version: 1.0.8 (stable)
 
 ### Author: Dr. Simon Antony Roberts <simon@snails.email>
 
@@ -163,6 +163,21 @@ The follow lines go in your API_ROOT_PATH/.htaccess
     RewriteRule ^v([0-9]{1,2})/([0-9a-z]{32})/(masters|domains|users)/(raw|html|serial|json|xml).api ./index.php?version=$1&authkey=$2&mode=$3&format=$4 [L,NC,QSA]
     RewriteRule ^v([0-9]{1,2})/([0-9a-z]{32})/([0-9a-z]{32})/(zones)/(raw|html|serial|json|xml).api ./index.php?version=$1&authkey=$2&key=$3&mode=$4&format=$5 [L,NC,QSA]
     RewriteRule ^v([0-9]{1,2})/([0-9a-z]{32})/([0-9a-z]{32})/(edit|delete)/(zones|domain|master|user)/(raw|html|serial|json|xml).api ./index.php?version=$1&authkey=$2&key=$3&mode=$4&type=$5&format=$6 [L,NC,QSA]
+    
+    
+## Scheduled Cron Job Details.,
+    
+There is one or more cron jobs that is scheduled task that need to be added to your system kernel when installing this API, the following command is before you install the chronological jobs with crontab in debain/ubuntu
+    
+    Execute:-
+    $ sudo crontab -e
+
+
+### CronTab Entry:
+
+You have to add the following cronjobs to your cronjobs or on windows scheduled tasks!
+
+    */15 * * * * /usr/bin/php /var/www/zones.snails.email/crons/import-dns-records.php
     
 ## Licensing
 

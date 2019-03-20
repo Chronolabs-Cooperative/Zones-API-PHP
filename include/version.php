@@ -41,5 +41,5 @@ defined('API_ROOT_PATH') || exit('Restricted access');
 /**
  *  Define API version
  */
-define('API_VERSION', 'DNS Zones Propogation REST Services API 1.0.7');
+define('API_VERSION', 'DNS Zones Propogation REST Services API 1.0.8');
 define('API_TYPE', 'zones-api');
