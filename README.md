@@ -162,7 +162,7 @@ The follow lines go in your API_ROOT_PATH/.htaccess
     RewriteRule ^v([0-9]{1,2})/([0-9a-z]{32})/(supermaster|domains|zones).api ./index.php?version=$1&authkey=$2&mode=$3 [L,NC,QSA]
     RewriteRule ^v([0-9]{1,2})/([0-9a-z]{32})/(masters|domains|users)/(raw|html|serial|json|xml).api ./index.php?version=$1&authkey=$2&mode=$3&format=$4 [L,NC,QSA]
     RewriteRule ^v([0-9]{1,2})/([0-9a-z]{32})/([0-9a-z]{32})/(zones)/(raw|html|serial|json|xml).api ./index.php?version=$1&authkey=$2&key=$3&mode=$4&format=$5 [L,NC,QSA]
-    RewriteRule ^v([0-9]{1,2})/([0-9a-z]{32})/([0-9a-z]{32})/(edit|delete)/(zones|domain|master|user)/(raw|html|serial|json|xml).api ./index.php?version=$1&authkey=$2&key=$3&mode=$4&type=$5&format=$6 [L,NC,QSA]
+    RewriteRule ^v([0-9]{1,2})/([0-9a-z]{32})/([0-9a-z]{32})/(edit|delete)/(zone|domain|master|user)/(raw|html|serial|json|xml).api ./index.php?version=$1&authkey=$2&key=$3&mode=$4&type=$5&format=$6 [L,NC,QSA]
     
     
 ## Scheduled Cron Job Details.,
